@@ -1,12 +1,14 @@
 package com.example.cook;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.SearchEvent;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
@@ -14,6 +16,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 
 public class OverviewListAdapter extends ArrayAdapter<String> {
     private String[] recipeName;
@@ -54,6 +57,16 @@ public class OverviewListAdapter extends ArrayAdapter<String> {
         else{
             viewHolder = (ViewHolder) viewObject.getTag();
         }
+        //viewHolder.detailViewButton = convertView.findViewById(R.id.button_detail_view);
+        //viewHolder.detailViewButton.setTag(position);
+        viewHolder.detailViewButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DetailView.detail_view_recipe = Recipe.getRecipeByName(recipeName[position]);//????
+                Intent detail_view_intent = new Intent(context, DetailView.class);
+                context.startActivity(detail_view_intent);
+            }
+        });
 
         viewHolder.imageViewRecipeOverview.setImageResource(recipeImageID[position]);
         viewHolder.textViewRecipeName.setText(recipeName[position]);
@@ -62,11 +75,11 @@ public class OverviewListAdapter extends ArrayAdapter<String> {
         viewHolder.textViewRecipeType.setText(recipeType[position]);
         viewHolder.switchFavorite.setText(recipeName[position]);
         if(isFavorite[position] == true) {
-            Log.i("00000000000 setTrue", recipeName[position]);
+
             viewHolder.switchFavorite.setChecked(true);
         }
         else{
-            Log.i("00000000000 setFalse", recipeName[position]);
+
             viewHolder.switchFavorite.setChecked(false);
         }
         /*
@@ -82,11 +95,10 @@ public class OverviewListAdapter extends ArrayAdapter<String> {
 
                 if(isChecked)
                 {
-                    Log.i("0000000000 add", recipeName[position]);
+
                     Recipe.favoriteRecipe.add(currentRecipe);
                 }
                 else{
-                    Log.i("0000000000 delete", recipeName[position]);
                     Recipe.favoriteRecipe.remove(currentRecipe);
                     }
             }
@@ -104,6 +116,7 @@ public class OverviewListAdapter extends ArrayAdapter<String> {
         TextView textViewRecipeType;
         Switch switchFavorite;
         ImageView imageViewRecipeOverview;
+        Button detailViewButton;
         ViewHolder (View v)
         {
             textViewRecipeName = (TextView) v.findViewById(R.id.textViewRecipeName);
@@ -112,6 +125,7 @@ public class OverviewListAdapter extends ArrayAdapter<String> {
             textViewRecipeType = (TextView) v.findViewById(R.id.textViewRecipeType);
             imageViewRecipeOverview = (ImageView) v.findViewById(R.id.imageViewRecipeOverview);
             switchFavorite = (Switch) v.findViewById(R.id.switch_favorite);
+            detailViewButton = (Button) v.findViewById(R.id.button_detail_view);
         }
     }
 

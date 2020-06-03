@@ -2,6 +2,8 @@ package com.example.cook;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.DialogInterface;
@@ -25,43 +27,16 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.PriorityQueue;
 
 //overview
 public class MainActivity extends AppCompatActivity {
 
-    class SearchResult {
-        Recipe found;
-        int matches;
-        SearchResult(Recipe found, int matches) {
-            this.found = found;
-            this.matches = matches;
-        }
-    }
-    class SearchResultMatchesComparator implements Comparator<SearchResult> {
-        public int compare(SearchResult s1, SearchResult s2) {
-            if (s1.matches < s2.matches)
-                return 1;
-            else if (s1.matches > s2.matches)
-                return -1;
-            return 0;
-        }
-    }
-
     ArrayList<Recipe> recipes = new ArrayList<Recipe>(){};
     ArrayList<Recipe> foundRecipes = new ArrayList<Recipe>(){};
-    PriorityQueue<SearchResult> searchResults = new PriorityQueue<SearchResult>(1,
-            new SearchResultMatchesComparator());
+
     private ArrayList<Recipe> currentlySelectedRecipe = new ArrayList<>();
     private Boolean isAll = true;
 
-    private SearchView ourSearchBar;
-    private TextView debugText7;
-
-    private String[] splitSearchQuery(String query) {
-        return query.split("[-, ]+");
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -167,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
         }
         //debugText7 = findViewById(R.id.debugText7);
         //debugText7.setText("aasdf");
-        ourSearchBar = findViewById(R.id.search_bar);
+        SearchView ourSearchBar = findViewById(R.id.search_bar);
         ourSearchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -189,29 +164,7 @@ public class MainActivity extends AppCompatActivity {
                         foundSomething = true;
                     }
                 }
-                //search description for query, order by hits of search terms
-                splitQuery = splitSearchQuery(query);
-                searchResults = new PriorityQueue<SearchResult>(1, new SearchResultMatchesComparator());
-                for (Recipe r : recipes) {
-                    int matches = 0;
-                    for (String word : splitQuery) {
-                        if (r.getDescription().toLowerCase().contains(word.toLowerCase()) ||
-                                r.getSBSDescription().toLowerCase().contains(word.toLowerCase())) {
-                            matches++;
-                        }
-                    }
-                    if (matches > 0) {
-                        searchResults.add(new SearchResult(r, matches));
-                        foundSomething = true;
-                    }
-                }
-                while(!searchResults.isEmpty()) {
-                    SearchResult s = searchResults.poll();
-                    if (!foundRecipes.contains(s.found)) {
-                        foundRecipes.add(s.found);
-                    }
-                    //debugText7.setText("found " + s.found.getName() + " " + s.matches + "matches");
-                }
+
 
                 if (!foundSomething) {
                     //debugText7.setText("failed to find " + query);
@@ -242,7 +195,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(add_recipe_intent);
         finish();
     }
-
+    public void startDetailView(View v) {
+        Intent detail_view_intent = new Intent(MainActivity.this, DetailView.class);
+        startActivity(detail_view_intent);
+    }
     //context menu items
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -357,8 +313,8 @@ public class MainActivity extends AppCompatActivity {
         String description = AddRecipe.description;
         int prep_time = AddRecipe.prep_time;
         int cooking_time = AddRecipe.cooking_time;
-        String sbs_description = AddRecipe.sbs_description;
-        int food_picture = this.getResources().getIdentifier("tarator" ,
+        ArrayList<GuideStep> sbs_description = AddRecipe.sbs_description;
+        int food_picture = this.getResources().getIdentifier(AddRecipe.food_picture ,
                 "drawable", getPackageName());
         Boolean[] tags = AddRecipe.tags;
 
