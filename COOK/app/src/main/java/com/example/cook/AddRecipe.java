@@ -38,9 +38,8 @@ public class AddRecipe extends AppCompatActivity {
     static int prep_time;
     static int cooking_time;
     static String food_picture;
-    static  int food_picture_index;
     static ArrayList<GuideStep> sbs_description = new ArrayList<GuideStep>();;
-    static String tmp_food_picture;
+    static String tmp_sbs_description;
 
     static boolean select_image = false;
 
@@ -85,53 +84,81 @@ public class AddRecipe extends AppCompatActivity {
         {
             input_name.setText(name);
             input_description.setText(description);
-            input_cooking_time.setText(Integer.toString(cooking_time));
-            input_prep_time.setText(Integer.toString(prep_time));
-            input_sbs_description.setText(tmp_food_picture);
+            if(cooking_time == 0)
+            {
+                input_cooking_time.setText("");
+            }
+            else
+            {
+                input_cooking_time.setText(Integer.toString(cooking_time));
+            }
+            if(prep_time == 0)
+            {
+                input_prep_time.setText("");
+            }
+            else
+            {
+                input_prep_time.setText(Integer.toString(cooking_time));
+            }
+            input_sbs_description.setText(tmp_sbs_description);
 
             input_picture.setImageResource(this.getResources().getIdentifier(food_picture,
                     "drawable", getPackageName()));
+
+            tag0.setChecked(tags[0]);
+            tag1.setChecked(tags[1]);
+            tag2.setChecked(tags[2]);
+            tag3.setChecked(tags[3]);
+            tag4.setChecked(tags[4]);
+            tag5.setChecked(tags[5]);
+            tag6.setChecked(tags[6]);
+            tag7.setChecked(tags[7]);
+            tag8.setChecked(tags[8]);
+            tag9.setChecked(tags[9]);
         }
+        else
+        {
+            if (Recipe.edit_recipe == true) {
+                input_name.setText(Recipe.recipe_to_edit.getName());
+                input_description.setText(Recipe.recipe_to_edit.getDescription());
+                input_prep_time.setText(String.valueOf(Recipe.recipe_to_edit.getPrep_time()));
+                input_cooking_time.setText(String.valueOf(Recipe.recipe_to_edit.getCooking_time()));
+                input_picture.setImageResource(this.getResources().getIdentifier(Integer.toString(Recipe.recipe_to_edit.getFood_picture()),
+                        "drawable", getPackageName()));
 
-        if (Recipe.edit_recipe == true) {
-            input_name.setText(Recipe.recipe_to_edit.getName());
-            input_description.setText(Recipe.recipe_to_edit.getDescription());
-            input_prep_time.setText(String.valueOf(Recipe.recipe_to_edit.getPrep_time()));
-            input_cooking_time.setText(String.valueOf(Recipe.recipe_to_edit.getCooking_time()));
+                tmp_sbs_description = "";
+                for (GuideStep gs : Recipe.recipe_to_edit.getSBSDescription()) {
+                    tmp_sbs_description += (gs.getDescription() + "\n");
+                }
+                input_sbs_description.setText(tmp_sbs_description);
 
-            String sbs_tmp = "";
-            for (GuideStep gs : Recipe.recipe_to_edit.getSBSDescription()) {
-                sbs_tmp += (gs.getDescription() + "\n");
-            }
-            input_sbs_description.setText(sbs_tmp);
+                tag0.setChecked(Recipe.recipe_to_edit.isPasta());
+                tag1.setChecked(Recipe.recipe_to_edit.isMeat());
+                tag2.setChecked(Recipe.recipe_to_edit.isDinner());
+                tag3.setChecked(Recipe.recipe_to_edit.isBreakfast());
+                tag4.setChecked(Recipe.recipe_to_edit.isSweets());
+                tag5.setChecked(Recipe.recipe_to_edit.isHealthy());
+                tag6.setChecked(Recipe.recipe_to_edit.isVegan());
+                tag7.setChecked(Recipe.recipe_to_edit.isLunch());
+                tag8.setChecked(Recipe.recipe_to_edit.isFast_food());
+                tag9.setChecked(Recipe.recipe_to_edit.isSoup());
 
-            tag0.setChecked(Recipe.recipe_to_edit.isPasta());
-            tag1.setChecked(Recipe.recipe_to_edit.isMeat());
-            tag2.setChecked(Recipe.recipe_to_edit.isDinner());
-            tag3.setChecked(Recipe.recipe_to_edit.isBreakfast());
-            tag4.setChecked(Recipe.recipe_to_edit.isSweets());
-            tag5.setChecked(Recipe.recipe_to_edit.isHealthy());
-            tag6.setChecked(Recipe.recipe_to_edit.isVegan());
-            tag7.setChecked(Recipe.recipe_to_edit.isLunch());
-            tag8.setChecked(Recipe.recipe_to_edit.isFast_food());
-            tag9.setChecked(Recipe.recipe_to_edit.isSoup());
-
-            tags[0] = Recipe.recipe_to_edit.isPasta();
-            tags[1] = Recipe.recipe_to_edit.isMeat();
-            tags[2] = Recipe.recipe_to_edit.isDinner();
-            tags[3] = Recipe.recipe_to_edit.isBreakfast();
-            tags[4] = Recipe.recipe_to_edit.isSweets();
-            tags[5] = Recipe.recipe_to_edit.isHealthy();
-            tags[6] = Recipe.recipe_to_edit.isVegan();
-            tags[7] = Recipe.recipe_to_edit.isLunch();
-            tags[8] = Recipe.recipe_to_edit.isFast_food();
-            tags[9] = Recipe.recipe_to_edit.isSoup();
-        } else {
-            for (int i = 0; i < 10; i++) {
-                tags[i] = false;
+                tags[0] = Recipe.recipe_to_edit.isPasta();
+                tags[1] = Recipe.recipe_to_edit.isMeat();
+                tags[2] = Recipe.recipe_to_edit.isDinner();
+                tags[3] = Recipe.recipe_to_edit.isBreakfast();
+                tags[4] = Recipe.recipe_to_edit.isSweets();
+                tags[5] = Recipe.recipe_to_edit.isHealthy();
+                tags[6] = Recipe.recipe_to_edit.isVegan();
+                tags[7] = Recipe.recipe_to_edit.isLunch();
+                tags[8] = Recipe.recipe_to_edit.isFast_food();
+                tags[9] = Recipe.recipe_to_edit.isSoup();
+            } else {
+                for (int i = 0; i < 10; i++) {
+                    tags[i] = false;
+                }
             }
         }
-
         tag0.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -228,13 +255,13 @@ public class AddRecipe extends AppCompatActivity {
                     description = input_description.getText().toString();
                     prep_time = Integer.parseInt(input_prep_time.getText().toString());
                     cooking_time = Integer.parseInt(input_cooking_time.getText().toString());
-                    tmp_food_picture = input_sbs_description.getText().toString();
+                    tmp_sbs_description = input_sbs_description.getText().toString();
 
                     //TODO: find a way of remembering the id of steps while editing
                     //      (currently new ids are assigned and old ones dropped)
                     //      we also have to remember the old images! currently they will be deleted when editing here
 
-                    for (String description : tmp_food_picture.split("\\r?\\n")) {
+                    for (String description : tmp_sbs_description.split("\\r?\\n")) {
                         sbs_description.add(new GuideStep(GuideStep.next_id, description, GuideStep.NO_PICTURE));
                     }
 
@@ -244,6 +271,8 @@ public class AddRecipe extends AppCompatActivity {
                         Recipe.recipe_to_edit.setPrep_time(prep_time);
                         Recipe.recipe_to_edit.setCooking_time(cooking_time);
                         Recipe.recipe_to_edit.setSBSDescription(sbs_description);
+                        Recipe.recipe_to_edit.setFood_picture(getResources().getIdentifier(food_picture ,
+                                "drawable", getPackageName()));
 
                         Recipe.recipe_to_edit.setPasta(tags[0]);
                         Recipe.recipe_to_edit.setMeat(tags[1]);
@@ -262,7 +291,7 @@ public class AddRecipe extends AppCompatActivity {
 
                     Intent go_back_to_main = new Intent(AddRecipe.this, MainActivity.class);
                     startActivity(go_back_to_main);
-
+                    select_image = false;
                     finish();
                 }
             }
@@ -272,9 +301,23 @@ public class AddRecipe extends AppCompatActivity {
             public void onClick(View arg0) {
                 name = input_name.getText().toString();
                 description = input_description.getText().toString();
-                prep_time = Integer.parseInt(input_prep_time.getText().toString());
-                cooking_time = Integer.parseInt(input_cooking_time.getText().toString());
-                tmp_food_picture = input_sbs_description.getText().toString();
+                if(input_prep_time.getText().toString().isEmpty())
+                {
+                    prep_time = 0;
+                }
+                else
+                {
+                    prep_time = Integer.parseInt(input_prep_time.getText().toString());
+                }
+                if(input_cooking_time.getText().toString().isEmpty())
+                {
+                    cooking_time = 0;
+                }
+                else
+                {
+                    cooking_time = Integer.parseInt(input_prep_time.getText().toString());
+                }
+                tmp_sbs_description = input_sbs_description.getText().toString();
 
                 Intent select_image_intend = new Intent(AddRecipe.this, Gallery.class);
                 startActivity(select_image_intend);
